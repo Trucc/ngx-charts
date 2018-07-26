@@ -1,8 +1,8 @@
 import { BaseChartDirective } from "../directives/base-chart.directive";
-import { Colors } from "../models/chartColor.model";
+import { Colors,Color } from "../models/chartColor.model";
 
 // @dynamic
-export class Color {
+export class ColorHelper {
   static rgba(colour:Array<number>, alpha:number):string {
     return 'rgba(' + colour.concat(alpha).join(',') + ')';
   }
@@ -67,7 +67,7 @@ export class Color {
     return colorsArr;
   }
 
-  static getColors(chartType:string, index:number, count:number):Color {
+  static getColors(chartType:string, index:number, count?:number):Color|number[] {
     if (chartType === 'pie' || chartType === 'doughnut') {
       return this.formatPieColors(this.generateColors(count));
     }

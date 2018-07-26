@@ -11,14 +11,15 @@ import {
 } from '@angular/core';
 
 import { Chart } from 'chart.js';
-import { Color } from '../helpers/color';
+import { ColorHelper } from '../helpers/color';
+import { Colors } from '../models/chartColor.model';
 
 /* tslint:disable-next-line */
 @Directive({
   selector: 'canvas[baseChart]',
   exportAs: 'base-chart'
 })
-export class BaseChartDirective implements OnDestroy, OnChanges, OnInit {
+export class BaseChartDirective implements OnDestroy, OnChanges, OnInit{
 
   public static defaultColors:Array<number[]> = [
     [255, 99, 132],
@@ -35,7 +36,6 @@ export class BaseChartDirective implements OnDestroy, OnChanges, OnInit {
     [77, 83, 96]
   ];
 
-  @Input() public data:number[] | any[];
   @Input() public datasets:any[];
   @Input() public labels:Array<any> = [];
   @Input() public options:any = {};
@@ -61,7 +61,7 @@ export class BaseChartDirective implements OnDestroy, OnChanges, OnInit {
     this.ctx = this.element.nativeElement.getContext('2d');
     this.cvs = this.element.nativeElement;
     this.initFlag = true;
-    if (this.data || this.datasets) {
+    if (this.datasets) {
       this.refresh();
     }
   }
@@ -69,14 +69,15 @@ export class BaseChartDirective implements OnDestroy, OnChanges, OnInit {
   public ngOnChanges(changes: SimpleChanges): void {
     if (this.initFlag) {
       // Check if the changes are in the data or datasets
+      //console.log(changes)
       if (changes.hasOwnProperty('data') || changes.hasOwnProperty('datasets')) {
-        if (changes['data']) {
+       /* if (changes['data']) {
           this.updateChartData(changes['data'].currentValue);
         } else {
           this.updateChartData(changes['datasets'].currentValue);
         }
 
-        this.chart.update();
+        this.chart.update();*/
       } else {
       // otherwise rebuild the chart
         this.refresh();
@@ -91,9 +92,14 @@ export class BaseChartDirective implements OnDestroy, OnChanges, OnInit {
     }
   }
 
-  public getChartBuilder(ctx:any/*, data:Array<any>, options:any*/):any {
-    let datasets:any = this.getDatasets();
+  public update():any{
+    this.chart.update()
+  }
 
+  public getChartBuilder(ctx:any/*, data:Array<any>, options:any*/):any {
+    console.log(this.datasets)
+    this.prepareDatasets();
+    console.log(this.datasets)
     let options:any = Object.assign({}, this.options);
     if (this.legend === false) {
       options.legend = {display: false};
@@ -119,7 +125,7 @@ export class BaseChartDirective implements OnDestroy, OnChanges, OnInit {
       type: this.chartType,
       data: {
         labels: this.labels,
-        datasets: datasets
+        datasets: this.datasets
       },
       options: options
     };
@@ -127,9 +133,9 @@ export class BaseChartDirective implements OnDestroy, OnChanges, OnInit {
     return new Chart(ctx, opts);
   }
 
-  private updateChartData(newDataValues: number[] | any[]): void {
+  /*private updateChartData(newDataValues: number[] | any[]): void {
     if (Array.isArray(newDataValues[0].data)) {
-      this.chart.data.datasets.forEach((dataset: any, i: number) => {
+      this.datasets.forEach((dataset: any, i: number) => {
         dataset.data = newDataValues[i].data;
 
         if (newDataValues[i].label) {
@@ -137,49 +143,31 @@ export class BaseChartDirective implements OnDestroy, OnChanges, OnInit {
         }
       });
     } else {
-      this.chart.data.datasets[0].data = newDataValues;
+      this.datasets[0].data = newDataValues;
     }
-  }
+  }*/
 
-  private getDatasets():any {
-    let datasets:any = void 0;
-    // in case if datasets is not provided, but data is present
-    if (!this.datasets || !this.datasets.length && (this.data && this.data.length)) {
-      if (Array.isArray(this.data[0])) {
-        datasets = (this.data as Array<number[]>).map((data:number[], index:number) => {
-          return {data, label: this.labels[index] || `Label ${index}`};
-        });
-      } else {
-        datasets = [{data: this.data, label: `Label 0`}];
+  private prepareDatasets():any {
+    // in case if datasets is not provided
+
+    if (!this.datasets) {
+      throw new Error(`ng-charts configuration error,
+      datasets field are required to render char ${this.chartType}, even if it's empty`);
+    }
+     // in case if datasets is provided and it's not empty
+    if (this.datasets && this.datasets.length) {
+      for(let i =0;i<this.datasets.length;i++){
+        // If random color was triggered
+        if( !(this.datasets[i].hasOwnProperty("randomizeColor") && !this.datasets[i].randomizeColor)){
+          if (this.colors && this.colors.length) {
+            Object.assign(this.datasets[i], this.colors[i]);
+          } else {
+            Object.assign(this.datasets[i], ColorHelper.getColors(this.chartType, i, this.datasets[i].data.length));
+          }
+        }
+
       }
     }
-
-    if (this.datasets && this.datasets.length ||
-      (datasets && datasets.length)) {
-      datasets = (this.datasets || datasets)
-      for(let i =0;i<datasets.lenght;i++)
-        if (this.colors && this.colors.length) {
-          Object.assign(datasets[i], this.colors[i]);
-        } else {
-          Object.assign(datasets[i], Color.getColors(this.chartType, i, datasets[i].data.length));
-        }
-        /*.map((elm:number, index:number) => {
-          let newElm:any = Object.assign({}, elm);
-          if (this.colors && this.colors.length) {
-            Object.assign(newElm, this.colors[index]);
-          } else {
-            Object.assign(newElm, Color.getColors(this.chartType, index, newElm.data.length));
-          }
-          return newElm;
-        });*/
-    }
-
-    /*if (!datasets) {
-      throw new Error(`ng-charts configuration error,
-      data or datasets field are required to render char ${this.chartType}`);
-    }*/
-    console.log(datasets)
-    return datasets;
   }
 
   private refresh():any {

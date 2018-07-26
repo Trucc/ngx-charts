@@ -1,5 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
-import { BaseChartDirective } from 'ngx-charts';
+import { BaseChartDirective, ColorHelper} from 'ngx-charts';
+
 
 @Component({
   selector: 'app-root',
@@ -9,27 +10,18 @@ import { BaseChartDirective } from 'ngx-charts';
 export class AppComponent {
 
   @ViewChild("baseChart") chart:BaseChartDirective;
-  datasets: Array<any> = []
+  datasets: Array<any> = [{ data: [ {x: "2018-01-29 10:08:00", y:21}, {x: "2018-01-29 13:08:00", y:121}],
+  label: "Test2",type:'line'
+}]
   labels: Array<any> = [];
-  lineChartType = 'line';
+  lineChartType = 'bar';
 
   options: any = {
     responsive: true,
     scales : {
       yAxes: [],
       xAxes: [{
-        min: '2018-01-29 10:08:00', // how to?
-      //  max: '2018-01-29 10:48:00', // how to?
-        type: 'time',
-        time: {
-          unit: 'minute',
-          unitStepSize: 10,
-          displayFormats: {
-            'second': 'HH:mm:ss',
-            'minute': 'HH:mm:ss',
-            'hour': 'HH:mm',
-          },
-        },
+        type: 'time'
         }],
     },
   }
@@ -46,10 +38,21 @@ export class AppComponent {
   update():any{
     this.datasets.push(...([
       { data: [ {x: "2018-01-29 10:08:00", y:121}, {x: "2018-01-29 13:08:00", y:11}],
-        label: "Test2"
+        label: "Test2",type:'line',
+        /* Attention à bien mettre une couleur */
+        ...ColorHelper.getColors("line",2)
       }]))
-    this.datasets[0].borderColor="#00FF00"
     this.datasets[0].data[0].y = 100
-    this.chart.chart.update()
+    this.chart.update()
+  }
+
+  changeData():any{
+    this.datasets[0].data = [{x:"2018-08-26T12:55:05.033Z", y:1},{x:"2018-09-26T12:55:05.033Z", y:52}]
+    this.chart.update()
+  }
+
+  remove(){
+    this.datasets.splice(this.datasets.length-1,1)
+    this.chart.update()
   }
 }

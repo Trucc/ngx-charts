@@ -3,5 +3,6 @@
   "dest": "../../dist/ngx-charts",
   "lib": {
     "entryFile": "src/public_api.ts"
-  }
+  },
+  "whitelistedNonPeerDependencies": ["chart.js"]
 }
