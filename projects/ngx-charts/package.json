@@ -1,6 +1,17 @@
 {
-  "name": "ngx-charts",
+  "name": "@truc/ngx-charts",
+  "description": "Fork from valor-software/ng2-charts to manage more efficiently datasets",
   "version": "0.0.1",
+  "author": "Truc <nfmwall@gmail.com>",
+  "keywords": [
+    "chart.js",
+    "angular",
+    "charts"
+  ],
+  "repository": {
+    "type":"git",
+    "url":"https://github.com/Trucc/ngx-charts"
+  },
   "peerDependencies": {
     "@angular/common": "^6.0.0-rc.0 || ^6.0.0",
     "@angular/core": "^6.0.0-rc.0 || ^6.0.0",
@@ -8,5 +19,6 @@
   },
   "dependencies": {
     "chart.js": "^2.7.2"
-  }
+  },
+  "license": "MIT"
 }
