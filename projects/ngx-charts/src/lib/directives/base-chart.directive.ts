@@ -97,9 +97,7 @@ export class BaseChartDirective implements OnDestroy, OnChanges, OnInit{
   }
 
   public getChartBuilder(ctx:any/*, data:Array<any>, options:any*/):any {
-    console.log(this.datasets)
     this.prepareDatasets();
-    console.log(this.datasets)
     let options:any = Object.assign({}, this.options);
     if (this.legend === false) {
       options.legend = {display: false};
