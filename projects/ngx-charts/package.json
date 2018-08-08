@@ -1,7 +1,7 @@
 {
   "name": "@truc/ngx-charts",
   "description": "Fork from valor-software/ng2-charts to manage more efficiently datasets",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Truc <nfmwall@gmail.com>",
   "keywords": [
     "chart.js",
